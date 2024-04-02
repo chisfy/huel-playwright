@@ -28,3 +28,35 @@ test("empty skeleton test for setup", function () {
 
 // Not product found
 // During second search for item, put in input value "non existant product" and verify when page is refreshed there are no product cards
+
+//plan
+//navigate to the URL
+//search bar
+//create a locator for the search button
+//use the locator for the search to assert that it is visible
+//use playwright interaction click - action
+//locate search bar area
+//assert - check that search bar space has appeared and is visible
+//input and search
+//create a locator for the search bar input
+//fill in input with value of "Complete Protein Powder"
+//assert that the input's value is now "Complete Protein Powder"
+//action the search by pressing enter on keyboard or click on search button
+//locate search button icon
+//use playwright click interaction to submit 
+//search
+//locate the product card with role of "listitem"
+//assert product card is on page
+//assert product card has the input value included in it's title
+//this ensures the correct result is displayed
+//create a locator for link button
+//assert value of button is "Shop Powder"
+//assert that is visible
+//this ensures the correct product was shown in the results
+//product page
+//use playwright click interaction to click on locator of link button 
+//create a locator for product title
+//assert that it's title is value of "Huel Powder"
+//this ensures correct product was clicked on
+//selecting item
+
