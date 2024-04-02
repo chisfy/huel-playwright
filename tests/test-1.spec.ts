@@ -1,0 +1,30 @@
+import { test, expect } from '@playwright/test';
+
+test('test', async ({ page }) => {
+  await page.goto('https://huel.com/');
+  await page.getByTestId('IconLink-Search').click();
+  await page.getByTestId('SearchBar__input').click();
+  await page.getByTestId('SearchBar__input').fill('protein');
+  await page.getByTestId('SearchBar__submit-button').click();
+  await page.getByText('Products.cls-1{fill:#0b0b0b;}').click();
+  await page.getByRole('link', { name: 'Shop Instant Meal Pouches' }).click();
+  await page.getByRole('button', { name: 'Spicy Indian Curry Increase' }).click();
+  await page.getByRole('button', { name: 'Spicy Indian Curry Increase' }).click();
+  await page.getByTestId('IconLink-Search').click();
+  await page.getByTestId('SearchBar__input').fill('bar');
+  await page.getByTestId('SearchBar__submit-button').click();
+  await page.getByRole('link', { name: 'Shop Complete Nutrition Bar' }).click();
+  await page.getByRole('button', { name: 'Chocolate Fudge Brownie' }).click();
+  await page.getByTestId('IconLink-Cart').click();
+  await page.goto('https://huel.com/products/build-your-own-bundle?mrasn=1158034.1435743.n4Di9GUN#/?product=huel-bar');
+  await page.getByTestId('acceptCookieButton').click();
+  await page.getByRole('button', { name: 'Continue' }).click();
+  await page.locator('#purchaseStatus-onetime').click();
+  await page.getByRole('button', { name: 'Continue' }).click();
+  await page.getByRole('button', { name: 'Continue To Cart' }).click();
+  await page.getByTestId('IconLink-Search').click();
+  await page.getByTestId('SearchBar__input').click();
+  await page.getByTestId('IconLink-Cart').click();
+  await page.getByText('Products.cls-1{fill:#0b0b0b;}').click();
+  await page.getByRole('link', { name: 'Clear Cart' }).click();
+});
