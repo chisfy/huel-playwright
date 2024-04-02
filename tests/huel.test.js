@@ -51,8 +51,8 @@ test("empty skeleton test for setup", function () {});
 //assert value of button is "Shop Powder"
 //assert that is visible
 //this ensures the correct product was shown in the results
-//product page
 //use playwright click interaction to click on locator of link button
+//product page
 //create a locator for product title
 //assert that it's title is value of "Huel Powder" and is visible
 //this ensures correct product was clicked on
@@ -130,15 +130,18 @@ test("Huel user flow, first time user adding two items to their basket", async f
   await expect(page).toHaveURL("https://uk.huel.com");
   //search bar
   //create a locator for the search button
+  //using testid for identifying element
   const searchButton = page.getByTestId("IconLink-Search");
   //use the locator for the search to assert that it is visible
   await expect(searchButton).toBeVisible();
   //use playwright interaction click - action
-  searchButton.click();
+  await searchButton.click();
   //locate search bar area
   const searchBar = page.getByTestId("Search");
   //assert - check that search bar space has appeared and is visible
-  await expect(searchBar).toBeVisible();
+  await expect(searchBar).toBeInViewport();
+
+
   //input and search
   //create a locator for the search bar input
   const searchBarInput = page.getByTestId("SearchBar__input");
@@ -151,28 +154,52 @@ test("Huel user flow, first time user adding two items to their basket", async f
   await expect(searchBarInput).toHaveValue(proteinPowder);
   //action the search by pressing enter on keyboard or click on search button
   await page.keyboard.press("Enter");
-  //to complete action by action clicking search button
-  //locate search button icon
-  //const searchbarSubmitBtn = page.getByLabel("SearchBar__submit-button");
-  //assertion to check locator is present on the page
-  //await expect(searchbarSubmitBtn).toBeVisible();
-  //action to click on button - however test error occurs here
-  //use playwright click interaction to submit .click();
+//   //to complete action by action clicking search button
+//   //locate search button icon
+//   const searchbarSubmitBtn = page.getByLabel("SearchBar__submit-button");
+//   //assertion to check locator is present on the page - hidden due to search icon being wrapped in a huel icon svg
+//   await expect(searchbarSubmitBtn).toBeHidden();
+//   //action to click on button
+//   //use playwright click interaction to submit .click();
+//   searchbarSubmitBtn.click();
   //asserting the page has changed after pressing Enter to submit search
   await expect(page).toHaveURL(/Powder/);
 
   //search
-  //locate the product card with role of "listitem"
-  //assert product card is on page
-  //assert product card has the input value included in it's title
+  //locating product list following search
+  const productCardList = page.locator("ul").nth(3);
+  //asserting product card list is present on page and correctly identified
+  await expect(productCardList).toBeVisible();
+  await expect(productCardList).toHaveClass("columns is-multiline");
+  //locate the product card with role of "listitem", lots of items with that and 
+  const powderProductCard = page.getByRole("listitem").filter({ has: page.getByRole('link', { name: 'Huel Powder', exact: true })});
+  //assert product card is on page and correctly identified
+  await expect(powderProductCard).toBeVisible();
+  //assert product card is the item we want by checking value in it's title
+  await expect(powderProductCard).toContainText("Huel Powder");
   //this ensures the correct result is displayed
   //create a locator for link button
-  const powderLink = page.getByRole("link").filter({ hasText: "Shop Powder"});
+  const productCardLink = page.getByRole('link', { name: 'Shop Powder' });
   //asserting correct selection of link by checking it matches class
-  await expect(powderLink).toHaveClass("button");
+  await expect(productCardLink).toHaveClass("button");
   //assert value of button is "Shop Powder"
-  await expect(powderLink).toHaveText("Shop Powder");
+  await expect(productCardLink).toHaveText("Shop Powder");
   //assert that is visible on the page
-  await expect(powderLink).toBeVisible();
+  await expect(productCardLink).toBeVisible();
   //this ensures the correct product was shown in the results
+  //user action to click on link to take to product page
+  await productCardLink.click();
+
+  //product page
+  //assert url page has changed since clicking on link - checking it contains products
+  await expect(page).not.toHaveURL(/Powder/);
+  await expect(page).toHaveURL(/products/);
+  //use playwright click interaction to click on locator of link button
+  //create a locator for product title
+  //assert that it's title is value of "Huel Powder" and is visible
+  //this ensures correct product was clicked on
+  //selecting item
+
+
+
 });
