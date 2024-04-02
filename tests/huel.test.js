@@ -120,3 +120,26 @@ test("empty skeleton test for setup", function () {
 //assert the value of list items to match name of product
 //e.g. Cinnamon Swirl
 
+
+test("verifying page is correct", async function ({ page }) {
+//navigate to the URL
+await page.goto("https://uk.huel.com/");
+//assert site is correct
+await expect(page).toHaveURL("https://uk.huel.com")
+});
+
+test("Huel user flow, first time user adding two items to their basket", async function ({ page }) {
+//navigate to the URL
+await page.goto("https://uk.huel.com/");
+//search bar
+//create a locator for the search button
+const searchButton = page.getByTestId("IconLink-Search")
+//use the locator for the search to assert that it is visible
+await expect(searchButton).toBeVisible();
+//use playwright interaction click - action
+searchButton.click();
+//locate search bar area
+const searchBar = page.getByTestId("Search")
+//assert - check that search bar space has appeared and is visible
+await expect(searchBar).toBeVisible();
+})
