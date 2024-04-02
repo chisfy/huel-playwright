@@ -131,15 +131,15 @@ test("Huel user flow, first time user adding two items to their basket", async f
   //search bar
   //create a locator for the search button
   //using testid for identifying element
-  const searchButton = page.getByTestId("IconLink-Search");
+  const searchButton = page.getByTestId("IconLink-Search").first();
   //use the locator for the search to assert that it is visible
   await expect(searchButton).toBeVisible();
   //use playwright interaction click - action
   await searchButton.click();
   //locate search bar area
-  const searchBar = page.getByTestId("Search");
+  const searchBar = page.getByTestId("Search").first();
   //assert - check that search bar space has appeared and is visible
-  await expect(searchBar).toBeInViewport();
+  await expect(searchBar).toBeVisible();
 
 
   //input and search
@@ -171,15 +171,17 @@ test("Huel user flow, first time user adding two items to their basket", async f
   //asserting product card list is present on page and correctly identified
   await expect(productCardList).toBeVisible();
   await expect(productCardList).toHaveClass("columns is-multiline");
-  //locate the product card with role of "listitem", lots of items with that and 
-  const powderProductCard = page.getByRole("listitem").filter({ has: page.getByRole('link', { name: 'Huel Powder', exact: true })});
+  //locate the product card with role of "listitem", filtered to find specific one
+  //creating variable so it can be re-used
+  const productName = "Huel Powder";
+  const powderProductCard = page.getByRole("listitem").filter({ has: page.getByRole("link", { name: productName, exact: true })});
   //assert product card is on page and correctly identified
   await expect(powderProductCard).toBeVisible();
   //assert product card is the item we want by checking value in it's title
-  await expect(powderProductCard).toContainText("Huel Powder");
+  await expect(powderProductCard).toContainText(productName);
   //this ensures the correct result is displayed
   //create a locator for link button
-  const productCardLink = page.getByRole('link', { name: 'Shop Powder' });
+  const productCardLink = page.getByRole("link", { name: "Shop Powder" });
   //asserting correct selection of link by checking it matches class
   await expect(productCardLink).toHaveClass("button");
   //assert value of button is "Shop Powder"
@@ -194,12 +196,33 @@ test("Huel user flow, first time user adding two items to their basket", async f
   //assert url page has changed since clicking on link - checking it contains products
   await expect(page).not.toHaveURL(/Powder/);
   await expect(page).toHaveURL(/products/);
-  //use playwright click interaction to click on locator of link button
+
+  //selecting item
+  //seems to need this step otherwise other steps in selecting item fail
+  await page.goto("https://uk.huel.com/products/build-your-own-bundle?mrasn=1147862.1422524.efWtR630#/?product=huel");
   //create a locator for product title
+  const pageTitle = page.getByRole("heading", { name: 'Huel Powder', exact: true });
   //assert that it's title is value of "Huel Powder" and is visible
   //this ensures correct product was clicked on
-  //selecting item
+  await expect(pageTitle).toBeVisible();
+  //create a locator for the cinnamon swirl increase button
+  const addBtnCinSwrl = page.getByRole("button", { name: "Cinnamon Swirl Increase" })
+  //assert that it is visible
+  //this ensures flavour is there on product page and actionable
+  await expect(addBtnCinSwrl).toBeVisible();
+  //use playwright click interaction to click button
+  await page.getByRole("button", { name: "Cinnamon Swirl Increase" }).click();
+  //create a locator for quantity input
+  const cinSwrlQuantity = page.getByRole("spinbutton", { name: "Cinnamon Swirl Quantity" });
+  //assert this is visible
+  await expect(cinSwrlQuantity).toBeVisible();
+  //assert the value is equal to "1"
+  await expect(cinSwrlQuantity).toHaveValue("1");
+  //assert this button has changed to white background 
+  await expect(addBtnCinSwrl).toHaveCSS("background-color", "rgb(244, 244, 246)");
+  //this ensures button has been clicked on
 
 
-
+  //repeating steps for item 2
+  
 });
