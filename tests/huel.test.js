@@ -5,7 +5,7 @@ test("empty skeleton test for setup", function () {
 
 });
 
-//Please note user flow, I was unable to use the basket/cart page to verify items in the my cart until I had clicked continue on the bottom and used that interface, this was tested on desktop and mobile. Basing user flow and playwright test on this experience.
+//Please note user flow, I was unable to use the basket/cart page to verify items in the my cart until I had clicked continue on the bottom and used that interface, this was checked on desktop and mobile (us and uk website). Basing user flow and playwright test on this experience.
 
 //user flow
 // 1) Navigate to the Huel homepage (https://huel.com/)
@@ -89,3 +89,34 @@ test("empty skeleton test for setup", function () {
 // use previous locator of the product card with role of "listitem"
 //assert product card is not visible on page
 //this ensures the incorrect search means no product card is on the page
+
+//basket check
+//create a locator for interactive summary bar
+//assert that it is visible on the page
+//create a locator for image through alt text
+//assert locator is visible
+//upon successful location and assertion that should mean product is in the basket
+//repeat image step for second product
+//create a locator for continue button
+//assert this is visible on the page
+//use playwright interaction click to use button
+//repeat action
+//create a locator for continue to basket button
+//assert this is visible
+//assert the button has the value of "Conitnue to Basket"
+//possible to assert colour 
+//this ensures user can see this button and choosing the right button to use
+//use playwright interaction click to use button
+//assert page url to be "https://uk.huel.com/cart"
+//create a locator for page title 
+//assert the value is "Your Basket" and visible on the page
+//create a locator for item count
+//assert the item is count is visible and to the value fo "2"
+//this means the user is currenly on the basket page with the correct amount of items selected in the basket
+//to verify items selected are indeed in the basket
+//locate the basket listS
+//assert it has the correct one is chosen by checking class is "CartMixAndMatchBundle__items"
+//locate the list items
+//assert the value of list items to match name of product
+//e.g. Cinnamon Swirl
+
