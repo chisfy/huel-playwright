@@ -56,7 +56,36 @@ test("empty skeleton test for setup", function () {
 //product page
 //use playwright click interaction to click on locator of link button 
 //create a locator for product title
-//assert that it's title is value of "Huel Powder"
+//assert that it's title is value of "Huel Powder" and is visible
 //this ensures correct product was clicked on
 //selecting item
+//create a locator for the cinnamon swirl increase button
+//assert that it is visible
+//this ensures flavour is there on product page and actionable
+//use playwright click interaction to click button
+//create a locator for quantity input
+//assert this is visible
+//assert the value is equal to "1"
+//assert this button is no longer visible
+//this ensures button has been clicked on
+//first half of the plan to be repeated for second item
 
+
+//error checking - no product
+//search bar
+//create a locator for the search button
+//use the locator for the search to assert that it is visible
+//use playwright interaction click - action
+//locate search bar area
+//assert - check that search bar space has appeared and is visible
+//input and search
+//create a locator for the search bar input
+//fill in input with value of "Complete Protein Powder"
+//assert that the input's value is now "Complete Protein Powder"
+//action the search by pressing enter on keyboard or click on search button
+//locate search button icon
+//use playwright click interaction to submit
+//search
+// use previous locator of the product card with role of "listitem"
+//assert product card is not visible on page
+//this ensures the incorrect search means no product card is on the page
