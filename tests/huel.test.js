@@ -161,5 +161,18 @@ test("Huel user flow, first time user adding two items to their basket", async f
   //asserting the page has changed after pressing Enter to submit search
   await expect(page).toHaveURL(/Powder/);
 
-  
+  //search
+  //locate the product card with role of "listitem"
+  //assert product card is on page
+  //assert product card has the input value included in it's title
+  //this ensures the correct result is displayed
+  //create a locator for link button
+  const powderLink = page.getByRole("link").filter({ hasText: "Shop Powder"});
+  //asserting correct selection of link by checking it matches class
+  await expect(powderLink).toHaveClass("button");
+  //assert value of button is "Shop Powder"
+  await expect(powderLink).toHaveText("Shop Powder");
+  //assert that is visible on the page
+  await expect(powderLink).toBeVisible();
+  //this ensures the correct product was shown in the results
 });
