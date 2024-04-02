@@ -1,8 +1,7 @@
-import { test, expect } from "@playwright/test"
+import { test, expect, chromium } from "@playwright/test"
 
 //basic skeleton test
 test("empty skeleton test for setup", function () {
-
 });
 
 //Please note user flow, I was unable to use the basket/cart page to verify items in the my cart until I had clicked continue on the bottom and used that interface, this was checked on desktop and mobile (us and uk website). Basing user flow and playwright test on this experience.
@@ -121,11 +120,17 @@ test("empty skeleton test for setup", function () {
 //e.g. Cinnamon Swirl
 
 
-test("verifying page is correct", async function ({ page }) {
+test("verifying page is correct", async function ({page}) {
+// //launching browser 
+// const browser = await playwright.chromium.launch({ headless: true });
+// const context = await browser.newContext();
+// const page = await context.newPage();
 //navigate to the URL
 await page.goto("https://uk.huel.com/");
 //assert site is correct
 await expect(page).toHaveURL("https://uk.huel.com")
+// //close the browser
+// await browser.close();
 });
 
 test("Huel user flow, first time user adding two items to their basket", async function ({ page }) {
@@ -142,4 +147,17 @@ searchButton.click();
 const searchBar = page.getByTestId("Search")
 //assert - check that search bar space has appeared and is visible
 await expect(searchBar).toBeVisible();
-})
+//input and search
+//create a locator for the search bar input
+const searchBarInput = page.getByTestId("SearchBar__input");
+//assert this is empty and nothing is filled in already
+await expect(searchBarInput).toBeEmpty();
+//fill in input with value of "Complete Protein Powder"
+const proteinPowder = "Complete Protein Powder";
+await searchBarInput.fill(proteinPowder);
+//assert that the input's value is now "Complete Protein Powder"
+await expect(searchBarInput).toHaveValue(proteinPowder);
+//action the search by pressing enter on keyboard or click on search button
+//locate search button icon
+//use playwright click interaction to submit 
+});
