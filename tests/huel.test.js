@@ -1,8 +1,7 @@
-import { test, expect, chromium } from "@playwright/test"
+import { test, expect, chromium } from "@playwright/test";
 
 //basic skeleton test
-test("empty skeleton test for setup", function () {
-});
+test("empty skeleton test for setup", function () {});
 
 //Please note user flow, I was unable to use the basket/cart page to verify items in the my cart until I had clicked continue on the bottom and used that interface, this was checked on desktop and mobile (us and uk website). Basing user flow and playwright test on this experience.
 
@@ -17,7 +16,7 @@ test("empty skeleton test for setup", function () {
 // 8) Click on the add button of search product
 // 9) See that after clicking add button, a quantity is displayed of product
 // 10) Repeat steps 2-9 only with a new product and flavour (e.g., search for "Vegan Protein Bars")
-// 11) Find continue button on bottom of the page 
+// 11) Find continue button on bottom of the page
 // 12) See page has refreshed to a new overlay
 // 13) Click continue
 // 14) See page has refreshed to a new overlay
@@ -42,7 +41,7 @@ test("empty skeleton test for setup", function () {
 //assert that the input's value is now "Complete Protein Powder"
 //action the search by pressing enter on keyboard or click on search button
 //locate search button icon
-//use playwright click interaction to submit 
+//use playwright click interaction to submit
 //search
 //locate the product card with role of "listitem"
 //assert product card is on page
@@ -53,7 +52,7 @@ test("empty skeleton test for setup", function () {
 //assert that is visible
 //this ensures the correct product was shown in the results
 //product page
-//use playwright click interaction to click on locator of link button 
+//use playwright click interaction to click on locator of link button
 //create a locator for product title
 //assert that it's title is value of "Huel Powder" and is visible
 //this ensures correct product was clicked on
@@ -68,7 +67,6 @@ test("empty skeleton test for setup", function () {
 //assert this button is no longer visible
 //this ensures button has been clicked on
 //first half of the plan to be repeated for second item
-
 
 //error checking - no product
 //search bar
@@ -103,11 +101,11 @@ test("empty skeleton test for setup", function () {
 //create a locator for continue to basket button
 //assert this is visible
 //assert the button has the value of "Conitnue to Basket"
-//possible to assert colour 
+//possible to assert colour
 //this ensures user can see this button and choosing the right button to use
 //use playwright interaction click to use button
 //assert page url to be "https://uk.huel.com/cart"
-//create a locator for page title 
+//create a locator for page title
 //assert the value is "Your Basket" and visible on the page
 //create a locator for item count
 //assert the item is count is visible and to the value fo "2"
@@ -119,45 +117,49 @@ test("empty skeleton test for setup", function () {
 //assert the value of list items to match name of product
 //e.g. Cinnamon Swirl
 
+test("Huel user flow, first time user adding two items to their basket", async function ({
+  page,
+}) {
+  // //launching browser
+  // const browser = await playwright.chromium.launch({ headless: true });
+  // const context = await browser.newContext();
+  // const page = await context.newPage();
+  //navigate to the URL
+  await page.goto("https://uk.huel.com/");
+  //assert site is correct
+  await expect(page).toHaveURL("https://uk.huel.com");
+  //search bar
+  //create a locator for the search button
+  const searchButton = page.getByTestId("IconLink-Search");
+  //use the locator for the search to assert that it is visible
+  await expect(searchButton).toBeVisible();
+  //use playwright interaction click - action
+  searchButton.click();
+  //locate search bar area
+  const searchBar = page.getByTestId("Search");
+  //assert - check that search bar space has appeared and is visible
+  await expect(searchBar).toBeVisible();
+  //input and search
+  //create a locator for the search bar input
+  const searchBarInput = page.getByTestId("SearchBar__input");
+  //assert this is empty and nothing is filled in already
+  await expect(searchBarInput).toBeEmpty();
+  //fill in input with value of "Complete Protein Powder"
+  const proteinPowder = "Complete Protein Powder";
+  await searchBarInput.fill(proteinPowder);
+  //assert that the input's value is now "Complete Protein Powder"
+  await expect(searchBarInput).toHaveValue(proteinPowder);
+  //action the search by pressing enter on keyboard or click on search button
+  await page.keyboard.press("Enter");
+  //to complete action by action clicking search button
+  //locate search button icon
+  //const searchbarSubmitBtn = page.getByLabel("SearchBar__submit-button");
+  //assertion to check locator is present on the page
+  //await expect(searchbarSubmitBtn).toBeVisible();
+  //action to click on button - however test error occurs here
+  //use playwright click interaction to submit .click();
+  //asserting the page has changed after pressing Enter to submit search
+  await expect(page).toHaveURL(/Powder/);
 
-test("verifying page is correct", async function ({page}) {
-// //launching browser 
-// const browser = await playwright.chromium.launch({ headless: true });
-// const context = await browser.newContext();
-// const page = await context.newPage();
-//navigate to the URL
-await page.goto("https://uk.huel.com/");
-//assert site is correct
-await expect(page).toHaveURL("https://uk.huel.com")
-// //close the browser
-// await browser.close();
-});
-
-test("Huel user flow, first time user adding two items to their basket", async function ({ page }) {
-//navigate to the URL
-await page.goto("https://uk.huel.com/");
-//search bar
-//create a locator for the search button
-const searchButton = page.getByTestId("IconLink-Search")
-//use the locator for the search to assert that it is visible
-await expect(searchButton).toBeVisible();
-//use playwright interaction click - action
-searchButton.click();
-//locate search bar area
-const searchBar = page.getByTestId("Search")
-//assert - check that search bar space has appeared and is visible
-await expect(searchBar).toBeVisible();
-//input and search
-//create a locator for the search bar input
-const searchBarInput = page.getByTestId("SearchBar__input");
-//assert this is empty and nothing is filled in already
-await expect(searchBarInput).toBeEmpty();
-//fill in input with value of "Complete Protein Powder"
-const proteinPowder = "Complete Protein Powder";
-await searchBarInput.fill(proteinPowder);
-//assert that the input's value is now "Complete Protein Powder"
-await expect(searchBarInput).toHaveValue(proteinPowder);
-//action the search by pressing enter on keyboard or click on search button
-//locate search button icon
-//use playwright click interaction to submit 
+  
 });
