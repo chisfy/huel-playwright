@@ -140,6 +140,7 @@ test("Huel user flow, first time user adding two items to their basket", async f
   //multiple items with id, so selecting first one as that is the div that holds all of it
   const searchBar = page.getByTestId("Search").first();
   //assert - check that search bar space has appeared and is visible
+  page.waitForURL();
   await expect(searchBar).toBeVisible();
 
   //input and search
@@ -202,18 +203,16 @@ test("Huel user flow, first time user adding two items to their basket", async f
   await expect(page).toHaveURL(/products/);
 
   //selecting item
-  //seems to need this step otherwise other steps in selecting item fail
-  await page.goto(
-    "https://uk.huel.com/products/build-your-own-bundle?mrasn=1147862.1422524.efWtR630#/?product=huel"
-  );
+  // //seems to need this step otherwise other steps in selecting item fail
+  await page.waitForURL();
   //create a locator for product title
-  const pageTitle = page.getByRole("heading", {
+  const powderPageTitle = page.getByRole("heading", {
     name: "Huel Powder",
     exact: true,
   });
   //assert that it's title is value of "Huel Powder" and is visible
   //this ensures correct product was clicked on
-  await expect(pageTitle).toBeVisible();
+  await expect(powderPageTitle).toBeVisible();
   //create a locator for the cinnamon swirl increase button
   const addBtnCinSwrl = page.getByRole("button", {
     name: "Cinnamon Swirl Increase",
@@ -222,7 +221,7 @@ test("Huel user flow, first time user adding two items to their basket", async f
   //this ensures flavour is there on product page and actionable
   await expect(addBtnCinSwrl).toBeVisible();
   //use playwright click interaction to click button
-  await page.getByRole("button", { name: "Cinnamon Swirl Increase" }).click();
+  await addBtnCinSwrl.click();
   //create a locator for quantity input
   const cinSwrlQuantity = page.getByRole("spinbutton", {
     name: "Cinnamon Swirl Quantity",
@@ -253,16 +252,13 @@ test("Huel user flow, first time user adding two items to their basket", async f
   const nutritionBar = "Nutrition Bar";
   await searchBarInput.fill(nutritionBar);
   //assert that the input's value is now "Protein Bar" and correctly typed
+  await expect(searchBarInput).toHaveValue(nutritionBar);
   //action the search by pressing enter on keyboard or click on search button
-// Action the search by pressing enter on the keyboard or clicking on the search button
-  searchBarInput.press("Enter"); // Press Enter key
-
-  // await page.goto("https://uk.huel.com/search?q=Nutrition%20Bar");
-  await page.waitForURL("https://uk.huel.com/search?q=Nutrition%20Bar");
+  //alternative way to using keyboard action
+  await searchBarInput.press("Enter"); // Press Enter key
   // Asserting the page has "Nutrition" in the URL to show that the page has indeed changed and correctly searched the term used in input
   //alternative way for asserting this
-  expect(page.url()).toContain("Nutrition");
-
+  await expect(page.url()).toContain("Nutrition");
 
   //search for item 2
   //reusing product list locator following search
@@ -289,13 +285,49 @@ test("Huel user flow, first time user adding two items to their basket", async f
   //assert value of button is "Shop Powder"
   await expect(nutriBarCardLink).toHaveText("Shop Complete Nutrition Bar");
   //assert that is visible on the page
-  expect(nutriBarCardLink).toBeVisible();
+  await expect(nutriBarCardLink).toBeVisible();
   //this ensures the correct product was shown in the results
   //user action to click on link to take to product page
+  await nutriBarCardLink.scrollIntoViewIfNeeded();
   await nutriBarCardLink.click();
-
-
   
+  //product page
+  //assert url page has changed since clicking on link - checking it contains products
+  await page.waitForURL();
+  await expect(page).not.toHaveURL(/Nutrition/);
+  await expect(page).toHaveURL(/products/);
+
+  //selecting item
+  // //seems to need this step otherwise other steps in selecting item fail
+  await page.waitForURL();
+  //create a locator for product title
+  const nutrbarPageTitle = page.getByRole("heading", {
+    name: "Huel Complete Nutrition Bar",
+    exact: true,
+  });
+  //assert that it's title is value of "Huel Powder" and is visible
+  //this ensures correct product was clicked on
+  await expect(nutrbarPageTitle).toBeVisible();
+  //create a locator for the cinnamon swirl increase button
+  const addBtnPeanCar = page.getByRole('button', { name: 'Peanut Caramel Increase' })
+  //assert that it is visible
+  //this ensures flavour is there on product page and actionable
+  await expect(addBtnPeanCar).toBeVisible();
+  //use playwright click interaction to click button
+  await addBtnPeanCar.click();
+  //create a locator for quantity input
+  const peanCarQuantity = page.getByRole('spinbutton', { name: 'Peanut Caramel Quantity' });
+  //assert this is visible
+  await expect(peanCarQuantity).toBeVisible();
+  //assert the value is equal to "1"
+  await expect(peanCarQuantity).toHaveValue("1");
+  //assert this button has changed to white background
+  //this ensures button has been clicked on
+  await expect(addBtnPeanCar).toHaveCSS(
+    "background-color",
+    "rgb(244, 244, 246)"
+  );
+
 });
 
 test("Checking that no product found works for non-existing product", async ({page}) => {
