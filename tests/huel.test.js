@@ -1,4 +1,5 @@
 import { test, expect, chromium } from "@playwright/test";
+import { assert } from "console";
 
 //basic skeleton test
 test("empty skeleton test for setup", function () {});
@@ -255,7 +256,8 @@ test("Huel user flow, first time user adding two items to their basket", async f
   await expect(searchBarInput).toHaveValue(nutritionBar);
   //action the search by pressing enter on keyboard or click on search button
   //alternative way to using keyboard action
-  await searchBarInput.press("Enter"); // Press Enter key
+  await searchBarInput.press("Enter");
+  await page.waitForURL();
   // Asserting the page has "Nutrition" in the URL to show that the page has indeed changed and correctly searched the term used in input
   //alternative way for asserting this
   await expect(page.url()).toContain("Nutrition");
@@ -328,12 +330,72 @@ test("Huel user flow, first time user adding two items to their basket", async f
     "rgb(244, 244, 246)"
   );
 
+//basket check
+//create a locator for interactive summary bar
+const summaryBar = page.getByText(".st0{fill:#0B0B0B;} .st0{fill:#0B0B0B;} £54.05SPEND £30.95 TO GET 10% OFF AT");
+//assert that it is visible on the page
+await expect(summaryBar).toBeVisible();
+//create a locator for image through alt text
+const powderImg = page.getByRole('img', { name: 'Huel Powder Cinnamon Swirl' });
+//assert locator is visible
+await expect(powderImg).toBeVisible();
+//create a locator for image through alt text
+const nutribarImg = page.getByRole('img', { name: 'Peanut Caramel' });
+//assert locator is visible
+//upon successful location and assertion that should mean products are in the basket
+await expect(nutribarImg).toBeVisible();
+//accepting cookies to not be in the way of summary bar
+await page.getByRole('button', { name: 'Accept' }).click();
+//create a locator for continue button fidning specific one with exact expression
+const contBtn = page.getByRole('button', { name: 'Continue', exact: true });
+//assert this is visible on the page
+await expect(contBtn).toBeVisible();
+//use playwright interaction click to use button
+await contBtn.click();
+//waiting for page to load
+await page.waitForURL();
+//asserting same continue button is visible on the page
+await expect(contBtn).toBeVisible();
+//using playwright action to interact and wait for page
+await contBtn.click();
+//waiting for page to load
+await page.waitForURL();
+//asserting page has moved on to next step
+await expect(page).toHaveURL(/cross-sell/);
+//creating a locator for the new continue button
+const contBtnToBaskt = page.getByRole('button', { name: 'Continue To Basket'});
+//assert the button has the value of "Continue to Basket"
+await expect(contBtnToBaskt).toHaveText("Continue To Basket");
+//possible to assert colour
+//this ensures user can see this button and choosing the right button to use
+await expect(contBtnToBaskt).toHaveCSS("background-color", "rgb(35, 209, 96)");
+//use playwright interaction click to use button
+await contBtnToBaskt.click();
+//waiting for page to load
+await page.waitForURL();
+//assert page url to be "https://uk.huel.com/cart" ensuring exact match
+//checking page has moved on to next step
+await expect(page).toHaveURL("https://uk.huel.com/cart");
+//create a locator for page title
+//assert the value is "Your Basket" and visible on the page
+//create a locator for item count
+//assert the item is count is visible and to the value fo "2"
+//this means the user is currenly on the basket page with the correct amount of items selected in the basket
+//to verify items selected are indeed in the basket
+//locate the basket lists
+//assert it has the correct one is chosen by checking class is "CartMixAndMatchBundle__items"
+//locate the list items
+//assert the value of list items to match name of product
+//e.g. Cinnamon Swirl
+
 });
 
 test("Checking that no product found works for non-existing product", async ({page}) => {
   //error checking - no product
   //navigate to the URL
   await page.goto("https://uk.huel.com/");
+  //waiting for url
+  await page.waitForURL();
   //assert site is correct
   await expect(page).toHaveURL("https://uk.huel.com");
   //search bar
