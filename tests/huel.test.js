@@ -10,7 +10,7 @@ test.use({
   //   use: { actionTimeout: 20000 },
   //   use: { navigationTimeout: 60000 }
   // },
-  expect: { timeout: 120000 },
+  timeout: 120000
 });
 
 //Please note user flow, I was unable to use the basket/cart page to verify items in the my cart until I had clicked continue on the bottom and used that interface, this was checked on desktop and mobile (us and uk website). Basing user flow and playwright test on this experience.
@@ -38,13 +38,15 @@ test.use({
 // During second search for item, put in input value "non existant product" and verify when page is refreshed there are no product cards
 
 //plan
-//navigate to the URL
+
 //search bar
+//navigate to the URL
 //create a locator for the search button
 //use the locator for the search to assert that it is visible
 //use playwright interaction click - action
 //locate search bar area
 //assert - check that search bar space has appeared and is visible
+
 //input and search
 //create a locator for the search bar input
 //fill in input with value of "Complete Protein Powder"
@@ -52,6 +54,7 @@ test.use({
 //action the search by pressing enter on keyboard or click on search button
 //locate search button icon
 //use playwright click interaction to submit
+
 //search
 //locate the product card with role of "listitem"
 //assert product card is on page
@@ -62,10 +65,12 @@ test.use({
 //assert that is visible
 //this ensures the correct product was shown in the results
 //use playwright click interaction to click on locator of link button
+
 //product page
 //create a locator for product title
 //assert that it's title is value of "Huel Powder" and is visible
 //this ensures correct product was clicked on
+
 //selecting item
 //create a locator for the cinnamon swirl increase button
 //assert that it is visible
@@ -76,6 +81,7 @@ test.use({
 //assert the value is equal to "1"
 //assert this button is no longer visible
 //this ensures button has been clicked on
+
 //first half of the plan to be repeated for second item
 
 //error checking - no product
@@ -127,13 +133,11 @@ test.use({
 //assert the value of list items to match name of product
 //e.g. Cinnamon Swirl
 
-test("Huel user flow, first time user adding two items to their basket", async function ({
-  page,
-}) {
-  // //launching browser
-  // const browser = await playwright.chromium.launch({ headless: true });
-  // const context = await browser.newContext();
-  // const page = await context.newPage();
+test("Able to visit site and click on search", async function ({}) {
+  //launching browser
+  const browser = await chromium.launch({ headless: true });
+  const context = await browser.newContext();
+  const page = await context.newPage();
   //navigate to the URL
   await page.goto("https://uk.huel.com/");
   //assert site is correct
@@ -158,6 +162,38 @@ test("Huel user flow, first time user adding two items to their basket", async f
   const searchBarInput = page.getByTestId("SearchBar__input");
   //assert this is empty and nothing is filled in already
   await expect(searchBarInput).toBeEmpty();
+
+  //closing page as test ends
+  await context.close();
+  await browser.close();
+});
+
+test("Use search bar with enter to find a product", async ({}) => {
+  //launching browser
+  const browser = await chromium.launch({ headless: true });
+  const context = await browser.newContext();
+  const page = await context.newPage();
+  //navigate to the URL
+  await page.goto("https://uk.huel.com/");
+  //assert site is correct
+  await expect(page).toHaveURL("https://uk.huel.com");
+  //search bar
+  //create a locator for the search button
+  //using testid for identifying element
+  const searchButton = page.getByTestId("IconLink-Search");
+  //use the locator for the search to assert that it is visible
+  await expect(searchButton).toBeVisible();
+  //use playwright interaction click - action
+  await searchButton.click();
+  //locate search bar area
+  //multiple items with id, so selecting first one as that is the div that holds all of it
+  const searchBar = page.getByTestId("Search").first();
+  //assert - check that search bar space has appeared and is visible
+  page.waitForURL();
+  await expect(searchBar).toBeVisible();
+  const searchBarInput = page.getByTestId("SearchBar__input");
+  //assert this is empty and nothing is filled in already
+  await expect(searchBarInput).toBeEmpty();
   //fill in input with value of "Complete Protein Powder"
   const proteinPowder = "Complete Protein Powder";
   await searchBarInput.fill(proteinPowder);
@@ -165,18 +201,24 @@ test("Huel user flow, first time user adding two items to their basket", async f
   await expect(searchBarInput).toHaveValue(proteinPowder);
   //action the search by pressing enter on keyboard or click on search button
   await page.keyboard.press("Enter");
-  //   //to complete action by action clicking search button
-  //   //locate search button icon
-  //   const searchbarSubmitBtn = page.getByLabel("SearchBar__submit-button");
-  //   //assertion to check locator is present on the page - hidden due to search icon being wrapped in a huel icon svg
-  //   await expect(searchbarSubmitBtn).toBeHidden();
-  //   //action to click on button
-  //   //use playwright click interaction to submit .click();
-  //   searchbarSubmitBtn.click();
+  //waiting for page to load
+  await page.waitForURL();
   //asserting the page has changed after pressing Enter to submit search
   await expect(page).toHaveURL(/Powder/);
+   //closing page as test ends
+   await context.close();
+   await browser.close();
+})
 
-  //search
+test("Able to find product from search and click on it to go to product page", async () => {
+  //launching browser
+  const browser = await chromium.launch({ headless: true });
+  const context = await browser.newContext();
+  const page = await context.newPage();
+  //navigate to the URL
+  await page.goto("https://uk.huel.com/search?q=Complete%20Protein%20Powder");
+  //assert site is correct
+  await expect(page).toHaveURL(/Powder/);
   //locating product list following search
   const productCardList = page.locator("ul").nth(3);
   //asserting product card list is present on page and correctly identified
@@ -204,15 +246,12 @@ test("Huel user flow, first time user adding two items to their basket", async f
   //this ensures the correct product was shown in the results
   //user action to click on link to take to product page
   await productCardLink.click();
-
   //product page
   //assert url page has changed since clicking on link - checking it contains products
   await expect(page).not.toHaveURL(/Powder/);
   await expect(page).toHaveURL(/products/);
 
-  //selecting item
-  // //seems to need this step otherwise other steps in selecting item fail
-  await page.waitForURL();
+  //Verify we are on correct page
   //create a locator for product title
   const powderPageTitle = page.getByRole("heading", {
     name: "Huel Powder",
@@ -221,7 +260,20 @@ test("Huel user flow, first time user adding two items to their basket", async f
   //assert that it's title is value of "Huel Powder" and is visible
   //this ensures correct product was clicked on
   await expect(powderPageTitle).toBeVisible();
-  //create a locator for the cinnamon swirl increase button
+  //closing page as test ends
+  await context.close();
+  await browser.close();
+});
+
+test("Completing user flow by slecting two items individually and then going to checkout and verifying they are in there", async () => {
+  //launching browser
+  const browser = await chromium.launch({ headless: true });
+  const context = await browser.newContext();
+  const page = await context.newPage();
+  await page.goto("https://uk.huel.com/products/build-your-own-bundle?mrasn=1147862.1422524.9NHZdeLn#/?product=huel")
+  // //seems to need this step otherwise other steps in selecting item fail
+  await page.waitForURL();
+ //create a locator for the cinnamon swirl increase button
   const addBtnCinSwrl = page.getByRole("button", {
     name: "Cinnamon Swirl Increase",
   });
@@ -240,26 +292,40 @@ test("Huel user flow, first time user adding two items to their basket", async f
   await expect(cinSwrlQuantity).toHaveValue("1");
   //assert this button has changed to white background
   //this ensures button has been clicked on
-  await expect(addBtnCinSwrl).toHaveCSS(
-    "background-color",
-    "rgb(244, 244, 246)"
-  );
 
-  //repeating steps for item 2
-  //reusing search button located for first item
+  //verify item has been added to itneractive summary bar
+  const sumBar = page.locator(".InteractiveSummaryBarProducts");
+  //assert that it is visible on the page
+  await expect(sumBar).toBeVisible();
+  //create a locator for image through alt text
+  const powderImg = page.getByRole("img", {
+    name: "Huel Powder Cinnamon Swirl",
+  });
+  //assert locator is visible
+  await expect(powderImg).toBeVisible();
+  // //seems to need this step otherwise other steps in selecting item fail
+  await page.waitForURL();
+  //using testid for identifying element
+  const searchButton = page.getByTestId("IconLink-Search");
+  //use the locator for the search to assert that it is visible
   await expect(searchButton).toBeVisible();
   //use playwright interaction click - action
   await searchButton.click();
-  //reusing searchbar and searchbar input already located
+  //locate search bar area
+  //multiple items with id, so selecting first one as that is the div that holds all of it
+  const searchBar = page.getByTestId("Search").first();
+  //assert - check that search bar space has appeared and is visible
   //assert - check that search bar space has appeared and is visible on this page
   //this ensures search button icon has been clicked and a dropdown search bar appears
+  page.waitForURL();
   await expect(searchBar).toBeVisible();
+  const searchBarInput = page.getByTestId("SearchBar__input");
   //assert this is empty and nothing is filled in already
   await expect(searchBarInput).toBeEmpty();
-  //fill in input with value of "Protein Bar" - non existent product
+  //fill in input with value of "Nutrition Bar"
   const nutritionBar = "Nutrition Bar";
   await searchBarInput.fill(nutritionBar);
-  //assert that the input's value is now "Protein Bar" and correctly typed
+  //assert that the input's value is now "Nutrition Bar" and correctly typed
   await expect(searchBarInput).toHaveValue(nutritionBar);
   //action the search by pressing enter on keyboard or click on search button
   //alternative way to using keyboard action
@@ -268,16 +334,16 @@ test("Huel user flow, first time user adding two items to their basket", async f
   // Asserting the page has "Nutrition" in the URL to show that the page has indeed changed and correctly searched the term used in input
   //alternative way for asserting this
   await expect(page.url()).toContain("Nutrition");
-
   //search for item 2
-  //reusing product list locator following search
+  //product list locator following search
+  const productCardList = page.locator("ul").nth(3);
   //asserting product card list is present on page and correctly identified
   await page.waitForURL();
   await expect(productCardList).toBeVisible();
   await expect(productCardList).toHaveClass("columns is-multiline");
   //locate the product card with role of "listitem", filtered to find specific one
   //chanigng variable so it can be re-used
-  productName = "Huel Complete Nutrition Bar";
+  const productName = "Huel Complete Nutrition Bar";
   const nutribarProductCard = page.getByRole("listitem").filter({
     has: page.getByRole("link", { name: productName, exact: true }),
   });
@@ -308,10 +374,10 @@ test("Huel user flow, first time user adding two items to their basket", async f
   await expect(page).toHaveURL(/products/);
 
   //selecting item
-  // //seems to need this step otherwise other steps in selecting item fail
-  await page.goto(
-    "https://uk.huel.com/products/build-your-own-bundle?mrasn=1147857.1422519.oTt0RaHO#/?product=huel-bar"
-  );
+  // // //seems to need this step otherwise other steps in selecting item fail
+  // await page.goto(
+  //   "https://uk.huel.com/products/build-your-own-bundle?mrasn=1147857.1422519.oTt0RaHO#/?product=huel-bar"
+  // );
   //create a locator for product title
   const nutrbarPageTitle = page.getByRole("heading", {
     name: "Huel Complete Nutrition Bar",
@@ -344,24 +410,19 @@ test("Huel user flow, first time user adding two items to their basket", async f
     "rgb(244, 244, 246)"
   );
 
-  //basket check
-  //create a locator for interactive summary bar
-  const summaryBar = page.getByText(
-    ".st0{fill:#0B0B0B;} .st0{fill:#0B0B0B;} £54.05SPEND £30.95 TO GET 10% OFF AT"
-  );
+  //verify second item is in the interactive summary bar
+  //recalling sumBar already located
   //assert that it is visible on the page
-  await expect(summaryBar).toBeVisible();
+  await expect(sumBar).toBeVisible();
   //create a locator for image through alt text
-  const powderImg = page.getByRole("img", {
-    name: "Huel Powder Cinnamon Swirl",
+  const nutribarImg = page.getByRole("img", {
+    name: "Peanut Caramel",
   });
   //assert locator is visible
-  await expect(powderImg).toBeVisible();
-  //create a locator for image through alt text
-  const nutribarImg = page.getByRole("img", { name: "Peanut Caramel" });
-  //assert locator is visible
-  //upon successful location and assertion that should mean products are in the basket
   await expect(nutribarImg).toBeVisible();
+  //also reasserting powderImg is still visible and on the page
+  await expect(powderImg).toBeVisible();
+
   //accepting cookies to not be in the way of summary bar
   await page.getByRole("button", { name: "Accept" }).click();
   //create a locator for continue button fidning specific one with exact expression
@@ -415,44 +476,54 @@ test("Huel user flow, first time user adding two items to their basket", async f
   await expect(bsktCount).not.toHaveText("3");
 
   //to verify items selected are indeed in the basket
+  //locating and correctly identifying list of items in basket
   const basketList = page
     .getByRole("list")
     .filter({ hasText: "Huel Complete Nutrition Bar" })
     .nth(1);
   await expect(basketList).toHaveClass("CartMixAndMatchBundle__items");
-  //locate the list items//assert the value of list items to match name of product e.g. cinnamon swirl
+  //locate the listed items
   const huelNutBar = page
-    .getByRole("listitem")
-    .filter({ hasText: "Huel Complete Nutrition Bar" })
-    .first();
+  .getByRole("listitem")
+  .filter({ hasText: "Huel Complete Nutrition Bar" })
+  .first();
   const huelPowder = page
-    .getByRole("listitem")
-    .filter({ hasText: "Huel Powder" })
-    .first();
+  .getByRole("listitem")
+  .filter({ hasText: "Huel Powder" })
+  .first()
   const nutBarPrice = page
-    .getByRole("listitem")
-    .filter({ hasText: "£26.30" })
-    .nth(1);
+  .getByRole("listitem")
+  .filter({ hasText: "£26.30" })
+  .nth(1);
   const powderPrice = page
-    .getByRole("listitem")
-    .filter({ hasText: "£27.75" })
-    .nth(1);
-  //asserting they have are the correct prices
+  .getByRole("listitem")
+  .filter({ hasText: "£27.75" })
+  .nth(1);
+  //assert the value of list items to match name of product e.g. cinnamon swirl
   await expect(huelNutBar).toBeVisible();
   await expect(huelNutBar).toContainText("Huel Complete Nutrition Bar");
   await expect(huelPowder).toBeVisible();
   await expect(huelPowder).toContainText("Huel Powder");
+  //asserting they have are the correct prices
   await expect(nutBarPrice).toContainText("£26.30");
   await expect(powderPrice).toContainText("£27.75");
+  
   //cart price total
+  //locating and aserting it is in view of user and correct total
   const basketTotal = page.locator("#cart_checkout").getByText("£54.05");
   await expect(basketTotal).toBeInViewport();
   await expect(basketTotal).toContainText("£54.05");
+  
+  //closing page as test ends
+  await context.close();
+  await browser.close();
 });
 
-test("Checking that no product found works for non-existing product", async ({
-  page,
-}) => {
+test("Checking that no product found works for non-existing product", async ({}) => {
+  //launching browser
+  const browser = await chromium.launch({ headless: true });
+  const context = await browser.newContext();
+  const page = await context.newPage();
   //error checking - no product
   //navigate to the URL
   await page.goto("https://uk.huel.com/");
@@ -491,5 +562,6 @@ test("Checking that no product found works for non-existing product", async ({
   //this ensures the search correctly identifies no products are returned as a result
   await expect(productCardList).not.toBeVisible();
   //closing page as test ends
-  await page.close();
+  await context.close();
+  await browser.close();
 });
