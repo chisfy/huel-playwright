@@ -118,7 +118,7 @@ test("empty skeleton test for setup", function () {});
 //e.g. Cinnamon Swirl
 
 test("Huel user flow, first time user adding two items to their basket", async function ({
-  page,
+  page
 }) {
   // //launching browser
   // const browser = await playwright.chromium.launch({ headless: true });
@@ -131,16 +131,16 @@ test("Huel user flow, first time user adding two items to their basket", async f
   //search bar
   //create a locator for the search button
   //using testid for identifying element
-  const searchButton = page.getByTestId("IconLink-Search").first();
+  const searchButton = page.getByTestId("IconLink-Search");
   //use the locator for the search to assert that it is visible
   await expect(searchButton).toBeVisible();
   //use playwright interaction click - action
   await searchButton.click();
   //locate search bar area
+  //multiple items with id, so selecting first one as that is the div that holds all of it
   const searchBar = page.getByTestId("Search").first();
   //assert - check that search bar space has appeared and is visible
   await expect(searchBar).toBeVisible();
-
 
   //input and search
   //create a locator for the search bar input
@@ -154,14 +154,14 @@ test("Huel user flow, first time user adding two items to their basket", async f
   await expect(searchBarInput).toHaveValue(proteinPowder);
   //action the search by pressing enter on keyboard or click on search button
   await page.keyboard.press("Enter");
-//   //to complete action by action clicking search button
-//   //locate search button icon
-//   const searchbarSubmitBtn = page.getByLabel("SearchBar__submit-button");
-//   //assertion to check locator is present on the page - hidden due to search icon being wrapped in a huel icon svg
-//   await expect(searchbarSubmitBtn).toBeHidden();
-//   //action to click on button
-//   //use playwright click interaction to submit .click();
-//   searchbarSubmitBtn.click();
+  //   //to complete action by action clicking search button
+  //   //locate search button icon
+  //   const searchbarSubmitBtn = page.getByLabel("SearchBar__submit-button");
+  //   //assertion to check locator is present on the page - hidden due to search icon being wrapped in a huel icon svg
+  //   await expect(searchbarSubmitBtn).toBeHidden();
+  //   //action to click on button
+  //   //use playwright click interaction to submit .click();
+  //   searchbarSubmitBtn.click();
   //asserting the page has changed after pressing Enter to submit search
   await expect(page).toHaveURL(/Powder/);
 
@@ -174,7 +174,11 @@ test("Huel user flow, first time user adding two items to their basket", async f
   //locate the product card with role of "listitem", filtered to find specific one
   //creating variable so it can be re-used
   const productName = "Huel Powder";
-  const powderProductCard = page.getByRole("listitem").filter({ has: page.getByRole("link", { name: productName, exact: true })});
+  const powderProductCard = page
+    .getByRole("listitem")
+    .filter({
+      has: page.getByRole("link", { name: productName, exact: true }),
+    });
   //assert product card is on page and correctly identified
   await expect(powderProductCard).toBeVisible();
   //assert product card is the item we want by checking value in it's title
@@ -199,30 +203,62 @@ test("Huel user flow, first time user adding two items to their basket", async f
 
   //selecting item
   //seems to need this step otherwise other steps in selecting item fail
-  await page.goto("https://uk.huel.com/products/build-your-own-bundle?mrasn=1147862.1422524.efWtR630#/?product=huel");
+  await page.goto(
+    "https://uk.huel.com/products/build-your-own-bundle?mrasn=1147862.1422524.efWtR630#/?product=huel"
+  );
   //create a locator for product title
-  const pageTitle = page.getByRole("heading", { name: 'Huel Powder', exact: true });
+  const pageTitle = page.getByRole("heading", {
+    name: "Huel Powder",
+    exact: true,
+  });
   //assert that it's title is value of "Huel Powder" and is visible
   //this ensures correct product was clicked on
   await expect(pageTitle).toBeVisible();
   //create a locator for the cinnamon swirl increase button
-  const addBtnCinSwrl = page.getByRole("button", { name: "Cinnamon Swirl Increase" })
+  const addBtnCinSwrl = page.getByRole("button", {
+    name: "Cinnamon Swirl Increase",
+  });
   //assert that it is visible
   //this ensures flavour is there on product page and actionable
   await expect(addBtnCinSwrl).toBeVisible();
   //use playwright click interaction to click button
   await page.getByRole("button", { name: "Cinnamon Swirl Increase" }).click();
   //create a locator for quantity input
-  const cinSwrlQuantity = page.getByRole("spinbutton", { name: "Cinnamon Swirl Quantity" });
+  const cinSwrlQuantity = page.getByRole("spinbutton", {
+    name: "Cinnamon Swirl Quantity",
+  });
   //assert this is visible
   await expect(cinSwrlQuantity).toBeVisible();
   //assert the value is equal to "1"
   await expect(cinSwrlQuantity).toHaveValue("1");
-  //assert this button has changed to white background 
-  await expect(addBtnCinSwrl).toHaveCSS("background-color", "rgb(244, 244, 246)");
+  //assert this button has changed to white background
+  await expect(addBtnCinSwrl).toHaveCSS(
+    "background-color",
+    "rgb(244, 244, 246)"
+  );
   //this ensures button has been clicked on
 
-
   //repeating steps for item 2
-  
+  //error checking - no product
+  //reusing search button located for first item
+  //use the locator for the search to assert that it is visible on this page
+  await expect(searchButton).toBeVisible();
+  //use playwright interaction click - action
+  await searchButton.click();
+  //reusing searchbar and searchbar input already located
+  //assert - check that search bar space has appeared and is visible on this page
+  //this ensures search button icon has been clicked and a dropdown search bar appears
+  await expect(searchBar).toBeVisible();
+  //assert this is empty and nothing is filled in already
+  await expect(searchBarInput).toBeEmpty();
+  //fill in input with value of "Protein Bar" - non existent product
+  const proteinBar = "Protein Bar";
+  await searchBarInput.fill(proteinBar);
+  //assert that the input's value is now "Protein Bar" and correctly typed
+  //action the search by pressing enter on keyboard or click on search button
+  await page.keyboard.press("Enter");
+  // use previous locator of the product card with role of "listitem"
+  //assert product card is not visible on page
+  //this ensures the incorrect search means no product card is on the page
+  await expecct(productCardList).not.toBeVisible();
 });
