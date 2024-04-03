@@ -33,4 +33,4 @@ What could be improved?
 
 - Perhaps there are better ways of verifying and asserting elements on a page as I mostly relied on the element being visible on the page
 - Could've implemented more error handling - such as using try and catch blocks as that may have helped with some errors
-- Was unable to count the numbe rof items in a list, I found it difficult to relate parent and child elements
+- Was unable to count the number of items in a list, I found it difficult to relate parent and child elements
