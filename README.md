@@ -8,6 +8,7 @@
 
 - First used the website for myself to get familiar with the task set and how the site runs, also inspecting the page to see how the elements are laid out on HTML - this gave an idea of how the site is structured and how elements interact with each other
 - Created a plan and user flow according to my experience and how I had done the task manually - I noted what elements reacted with each other when a particular action or event was triggered
+- Completed with Playwright, JavaScript in Visual Studio Code
 
 ⚙ Challenges
 - Brittleness of the tests - particularly as the testing tasks got heavier and larger
