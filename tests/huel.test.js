@@ -24,7 +24,7 @@ test("empty skeleton test for setup", function () {});
 // 16) See that page has refreshed to basket page
 // 17) Read the quantity total underneath "Your Basket"
 
-// Not product found
+// No product found
 // During second search for item, put in input value "non existant product" and verify when page is refreshed there are no product cards
 
 //plan
@@ -259,6 +259,6 @@ test("Huel user flow, first time user adding two items to their basket", async f
   await page.keyboard.press("Enter");
   // use previous locator of the product card with role of "listitem"
   //assert product card is not visible on page
-  //this ensures the incorrect search means no product card is on the page
-  await expecct(productCardList).not.toBeVisible();
+  //this ensures the search correctly identifies no products are returned as a result
+  await expect(productCardList).not.toBeVisible();
 });
