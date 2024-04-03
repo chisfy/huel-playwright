@@ -173,7 +173,7 @@ test("Huel user flow, first time user adding two items to their basket", async f
   await expect(productCardList).toHaveClass("columns is-multiline");
   //locate the product card with role of "listitem", filtered to find specific one
   //creating variable so it can be re-used
-  const productName = "Huel Powder";
+  let productName = "Huel Powder";
   const powderProductCard = page
     .getByRole("listitem")
     .filter({
@@ -232,16 +232,14 @@ test("Huel user flow, first time user adding two items to their basket", async f
   //assert the value is equal to "1"
   await expect(cinSwrlQuantity).toHaveValue("1");
   //assert this button has changed to white background
+  //this ensures button has been clicked on
   await expect(addBtnCinSwrl).toHaveCSS(
     "background-color",
     "rgb(244, 244, 246)"
   );
-  //this ensures button has been clicked on
 
   //repeating steps for item 2
-  //error checking - no product
   //reusing search button located for first item
-  //use the locator for the search to assert that it is visible on this page
   await expect(searchButton).toBeVisible();
   //use playwright interaction click - action
   await searchButton.click();
@@ -252,13 +250,90 @@ test("Huel user flow, first time user adding two items to their basket", async f
   //assert this is empty and nothing is filled in already
   await expect(searchBarInput).toBeEmpty();
   //fill in input with value of "Protein Bar" - non existent product
+  const nutritionBar = "Nutrition Bar";
+  await searchBarInput.fill(nutritionBar);
+  //assert that the input's value is now "Protein Bar" and correctly typed
+  //action the search by pressing enter on keyboard or click on search button
+// Action the search by pressing enter on the keyboard or clicking on the search button
+  searchBarInput.press("Enter"); // Press Enter key
+
+  // await page.goto("https://uk.huel.com/search?q=Nutrition%20Bar");
+  await page.waitForURL("https://uk.huel.com/search?q=Nutrition%20Bar");
+  // Asserting the page has "Nutrition" in the URL to show that the page has indeed changed and correctly searched the term used in input
+  //alternative way for asserting this
+  expect(page.url()).toContain("Nutrition");
+
+
+  //search for item 2
+  //reusing product list locator following search
+  //asserting product card list is present on page and correctly identified
+  await expect(productCardList).toBeVisible();
+  await expect(productCardList).toHaveClass("columns is-multiline");
+  //locate the product card with role of "listitem", filtered to find specific one
+  //chanigng variable so it can be re-used
+  productName = "Huel Complete Nutrition Bar";
+  const nutribarProductCard = page
+    .getByRole("listitem")
+    .filter({
+      has: page.getByRole("link", { name: productName, exact: true }),
+    });
+  //assert product card is on page and correctly identified
+  await expect(nutribarProductCard).toBeVisible();
+  //assert product card is the item we want by checking value in it's title
+  await expect(nutribarProductCard).toContainText(productName);
+  //this ensures the correct result is displayed
+  //create a locator for link button
+  const nutriBarCardLink = page.getByRole("link", { name: "Shop Complete Nutrition Bar" });
+  //asserting correct selection of link by checking it matches class
+  await expect(nutriBarCardLink).toHaveClass("button");
+  //assert value of button is "Shop Powder"
+  await expect(nutriBarCardLink).toHaveText("Shop Complete Nutrition Bar");
+  //assert that is visible on the page
+  expect(nutriBarCardLink).toBeVisible();
+  //this ensures the correct product was shown in the results
+  //user action to click on link to take to product page
+  await nutriBarCardLink.click();
+
+
+  
+});
+
+test("Checking that no product found works for non-existing product", async ({page}) => {
+  //error checking - no product
+  //navigate to the URL
+  await page.goto("https://uk.huel.com/");
+  //assert site is correct
+  await expect(page).toHaveURL("https://uk.huel.com");
+  //search bar
+  //create a locator for the search button
+  //using testid for identifying element
+  const searchButton = page.getByTestId("IconLink-Search");
+  //use the locator for the search to assert that it is visible
+  await expect(searchButton).toBeVisible();
+  //use playwright interaction click - action
+  await searchButton.click();
+  //locate search bar area
+  //multiple items with id, so selecting first one as that is the div that holds all of it
+  const searchBar = page.getByTestId("Search").first();
+  //assert - check that search bar space has appeared and is visible
+  await expect(searchBar).toBeVisible();
+  //input and search
+  //create a locator for the search bar input
+  const searchBarInput = page.getByTestId("SearchBar__input");
+  //assert this is empty and nothing is filled in already
+  await expect(searchBarInput).toBeEmpty();
+  //fill in input with value of "Protein Bar" - non existent product
   const proteinBar = "Protein Bar";
   await searchBarInput.fill(proteinBar);
   //assert that the input's value is now "Protein Bar" and correctly typed
   //action the search by pressing enter on keyboard or click on search button
   await page.keyboard.press("Enter");
-  // use previous locator of the product card with role of "listitem"
+  //search
+  //locating product list following search
+  const productCardList = page.locator("ul").nth(3);
   //assert product card is not visible on page
   //this ensures the search correctly identifies no products are returned as a result
   await expect(productCardList).not.toBeVisible();
-});
+  //closing page as test ends
+  await page.close();
+})
