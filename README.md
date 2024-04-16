@@ -17,7 +17,7 @@
 
 🏫 Lessons Learnt
 - More confidence with playwright
-- Understand better how the DOM is structured,
+- Understand better how the DOM is structured
 - Pauses in test can be beneficial for the running, allowing events to occur and then letting the next action proceed
 - More familiarity with the inspection page, understanding accessiblity and property of elements
 - Breaking tests down to be more readable and to not overload the testing tool
@@ -27,7 +27,7 @@
 What went well?
 
 - Creating a user flow and plan helped map out the steps required to carry out the test
-- Multiple tests ran on my system will all tests passing
+- Multiple tests ran on my system with all tests passing
 - Utilised playwright tools, documentation, inspecting of page to help complete the task
 
 What could be improved?
